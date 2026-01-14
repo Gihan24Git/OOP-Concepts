@@ -1,8 +1,12 @@
+import java.util.Scanner;
+
+// Abstract Shape class
 abstract class Shape {
     abstract double area();
     abstract double perimeter();
 }
 
+// Square class
 class Square extends Shape {
     double side;
 
@@ -10,15 +14,16 @@ class Square extends Shape {
         this.side = side;
     }
 
-    double area() {
+    public double area() {
         return side * side;
     }
 
-    double perimeter() {
+    public double perimeter() {
         return 4 * side;
     }
 }
 
+// Rectangle class
 class Rectangle extends Shape {
     double length, width;
 
@@ -27,15 +32,16 @@ class Rectangle extends Shape {
         this.width = width;
     }
 
-    double area() {
+    public double area() {
         return length * width;
     }
 
-    double perimeter() {
+    public double perimeter() {
         return 2 * (length + width);
     }
 }
 
+// Circle class
 class Circle extends Shape {
     double radius;
 
@@ -43,29 +49,64 @@ class Circle extends Shape {
         this.radius = radius;
     }
 
-    double area() {
+    public double area() {
         return Math.PI * radius * radius;
     }
 
-    double perimeter() {
+    public double perimeter() {
         return 2 * Math.PI * radius;
     }
 }
 
+// Main class
 public class ShapeCalculator {
+
     public static void main(String[] args) {
 
-        Shape square = new Square(5);
-        Shape rectangle = new Rectangle(4, 6);
-        Shape circle = new Circle(3);
+        Scanner sc = new Scanner(System.in);
+        Shape shape = null;
 
-        System.out.println("Square Area: " + square.area());
-        System.out.println("Square Perimeter: " + square.perimeter());
+        // Display menu
+        System.out.println("---- Shape Calculator ----");
+        System.out.println("1. Square");
+        System.out.println("2. Rectangle");
+        System.out.println("3. Circle");
+        System.out.print("Select a shape (1-3): ");
 
-        System.out.println("Rectangle Area: " + rectangle.area());
-        System.out.println("Rectangle Perimeter: " + rectangle.perimeter());
+        int choice = sc.nextInt();
 
-        System.out.println("Circle Area: " + circle.area());
-        System.out.println("Circle Perimeter: " + circle.perimeter());
+        switch (choice) {
+
+            case 1:
+                System.out.print("Enter side length: ");
+                double side = sc.nextDouble();
+                shape = new Square(side);
+                break;
+
+            case 2:
+                System.out.print("Enter length: ");
+                double length = sc.nextDouble();
+                System.out.print("Enter width: ");
+                double width = sc.nextDouble();
+                shape = new Rectangle(length, width);
+                break;
+
+            case 3:
+                System.out.print("Enter radius: ");
+                double radius = sc.nextDouble();
+                shape = new Circle(radius);
+                break;
+
+            default:
+                System.out.println("Invalid choice!");
+                System.exit(0);
+        }
+
+        // Display results
+        System.out.println("\n--- Results ---");
+        System.out.println("Area: " + shape.area());
+        System.out.println("Perimeter: " + shape.perimeter());
+
+        sc.close();
     }
 }
