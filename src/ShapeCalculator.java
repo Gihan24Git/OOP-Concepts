@@ -1,30 +1,36 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-// Abstract class
 abstract class Shape {
 
     public void printOutput() {
-        System.out.println("Shape : " + getShapeName() + "\n");
-
-        System.out.println("Properties :");
+        System.out.println("Shape: " + getShapeName());
+        System.out.println("\nProperties:");
         printProperties();
-
-        System.out.println("\nArea : " + calculateArea());
-        System.out.println("Perimeter : " + calculatePerimeter());
+        System.out.println("\nArea: " + calculateArea());
+        System.out.println("Perimeter: " + calculatePerimeter());
     }
 
     abstract String getShapeName();
     abstract void printProperties();
-    abstract int calculateArea();
-    abstract int calculatePerimeter();
+    abstract double calculateArea();
+    abstract double calculatePerimeter();
 }
 
-// Square class
+class InvalidDimensionException extends Exception {
+    public InvalidDimensionException(String message) {
+        super(message);
+    }
+}
+
 class Square extends Shape {
 
-    private int side;
+    private final double side;
 
-    public Square(int side) {
+    public Square(double side) throws InvalidDimensionException {
+        if (side <= 0) {
+            throw new InvalidDimensionException("Side must be greater than 0");
+        }
         this.side = side;
     }
 
@@ -36,22 +42,24 @@ class Square extends Shape {
         System.out.println("Side = " + side);
     }
 
-    int calculateArea() {
+    double calculateArea() {
         return side * side;
     }
 
-    int calculatePerimeter() {
+    double calculatePerimeter() {
         return 4 * side;
     }
 }
 
-// Rectangle class
 class Rectangle extends Shape {
 
-    private int height;
-    private int width;
+    private final double height;
+    private final double width;
 
-    public Rectangle(int height, int width) {
+    public Rectangle(double height, double width) throws InvalidDimensionException {
+        if (height <= 0 || width <= 0) {
+            throw new InvalidDimensionException("Height and Width must be greater than 0");
+        }
         this.height = height;
         this.width = width;
     }
@@ -65,21 +73,23 @@ class Rectangle extends Shape {
         System.out.println("Width = " + width);
     }
 
-    int calculateArea() {
+    double calculateArea() {
         return height * width;
     }
 
-    int calculatePerimeter() {
+    double calculatePerimeter() {
         return 2 * (height + width);
     }
 }
 
-// Circle class
 class Circle extends Shape {
 
-    private int radius;
+    private final double radius;
 
-    public Circle(int radius) {
+    public Circle(double radius) throws InvalidDimensionException {
+        if (radius <= 0) {
+            throw new InvalidDimensionException("Radius must be greater than 0");
+        }
         this.radius = radius;
     }
 
@@ -91,59 +101,72 @@ class Circle extends Shape {
         System.out.println("Radius = " + radius);
     }
 
-    int calculateArea() {
-        return (int) (Math.PI * radius * radius);
+    double calculateArea() {
+        return Math.PI * radius * radius;
     }
 
-    int calculatePerimeter() {
-        return (int) (2 * Math.PI * radius);
+    double calculatePerimeter() {
+        return 2 * Math.PI * radius;
     }
 }
 
-// Main class
 public class ShapeCalculator {
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        Shape shape = null;
+        Shape shape;
 
-        System.out.println("--- Shape Menu ---");
-        System.out.println("1. Square");
-        System.out.println("2. Rectangle");
-        System.out.println("3. Circle");
-        System.out.print("Select a shape: ");
+        while (true) {
+            try {
+                System.out.println("\n--- Shape Menu ---");
+                System.out.println("1. Square");
+                System.out.println("2. Rectangle");
+                System.out.println("3. Circle");
+                System.out.println("4. Exit");
+                System.out.print("Select a shape: ");
 
-        int choice = scanner.nextInt();
+                int choice = scanner.nextInt();
 
-        switch (choice) {
-            case 1:
-                System.out.print("Enter side length: ");
-                shape = new Square(scanner.nextInt());
-                break;
+                switch (choice) {
+                    case 1 -> {
+                        System.out.print("Enter side length: ");
+                        double side = scanner.nextDouble();
+                        shape = new Square(side);
+                    }
+                    case 2 -> {
+                        System.out.print("Enter height: ");
+                        double height = scanner.nextDouble();
+                        System.out.print("Enter width: ");
+                        double width = scanner.nextDouble();
+                        shape = new Rectangle(height, width);
+                    }
+                    case 3 -> {
+                        System.out.print("Enter radius: ");
+                        double radius = scanner.nextDouble();
+                        shape = new Circle(radius);
+                    }
+                    case 4 -> {
+                        System.out.println("Exiting program. Goodbye!");
+                        scanner.close();
+                        return;
+                    }
+                    default -> throw new IllegalArgumentException("Invalid menu choice!");
+                }
 
-            case 2:
-                System.out.print("Enter height: ");
-                int height = scanner.nextInt();
-                System.out.print("Enter width: ");
-                int width = scanner.nextInt();
-                shape = new Rectangle(height, width);
-                break;
+                System.out.println();
+                shape.printOutput();
 
-            case 3:
-                System.out.print("Enter radius: ");
-                shape = new Circle(scanner.nextInt());
-                break;
+            } catch (InputMismatchException e) {
+                System.out.println(" Error: Please enter numbers.");
+                scanner.nextLine();
 
-            default:
-                System.out.println("Invalid choice!");
+            } catch (InvalidDimensionException e) {
+                System.out.println(" Dimension Error: " + e.getMessage());
+
+            } catch (IllegalArgumentException e) {
+                System.out.println(" Menu Error: " + e.getMessage());
+            }
         }
-
-        if (shape != null) {
-            System.out.println();
-            shape.printOutput();   // SINGLE reusable output method
-        }
-
-        scanner.close();
     }
 }
